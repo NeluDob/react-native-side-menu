@@ -31,7 +31,7 @@ type Props = {
   bounceBackOnOverdraw: bool,
   autoClosing: bool
 };
-
+ 
 type Event = {
   nativeEvent: {
     layout: {
