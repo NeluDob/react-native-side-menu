@@ -25,13 +25,12 @@ type Props = {
   hiddenMenuOffset: number,
   disableGestures: Function | bool,
   animationFunction: Function,
-  onAnimationComplete: Function,
   onStartShouldSetResponderCapture: Function,
   isOpen: bool,
   bounceBackOnOverdraw: bool,
   autoClosing: bool
 };
- 
+
 type Event = {
   nativeEvent: {
     layout: {
@@ -104,7 +103,7 @@ export default class SideMenu extends React.Component {
     this.state.left.addListener(({value}) => this.props.onSliding(Math.abs((value - this.state.hiddenMenuOffset) / (this.state.openMenuOffset - this.state.hiddenMenuOffset))));
   }
 
-  UNSAFE_componentWillMount(): void {
+  componentWillMount(): void {
     this.responder = PanResponder.create({
       onStartShouldSetResponderCapture: this.onStartShouldSetResponderCapture,
       onMoveShouldSetPanResponder: this.onMoveShouldSetPanResponder,
@@ -114,7 +113,7 @@ export default class SideMenu extends React.Component {
     });
   }
 
-  UNSAFE_componentWillReceiveProps(props: Props): void {
+  componentWillReceiveProps(props: Props): void {
     if (typeof props.isOpen !== 'undefined' && this.isOpen !== props.isOpen && (props.autoClosing || this.isOpen === false)) {
       this.openMenu(props.isOpen);
     }
@@ -163,7 +162,7 @@ export default class SideMenu extends React.Component {
 
     this.props
       .animationFunction(this.state.left, newOffset)
-      .start(this.props.onAnimationComplete);
+      .start();
 
     this.prevLeft = newOffset;
   }
@@ -270,7 +269,6 @@ SideMenu.propTypes = {
   animationStyle: PropTypes.func,
   disableGestures: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   animationFunction: PropTypes.func,
-  onAnimationComplete: PropTypes.func,
   onStartShouldSetResponderCapture: PropTypes.func,
   isOpen: PropTypes.bool,
   bounceBackOnOverdraw: PropTypes.bool,
@@ -299,9 +297,7 @@ SideMenu.defaultProps = {
   animationFunction: (prop, value) => Animated.spring(prop, {
     toValue: value,
     friction: 8,
-    useNativeDriver: true,
   }),
-  onAnimationComplete: () => {},
   isOpen: false,
   bounceBackOnOverdraw: true,
   autoClosing: true,
