@@ -1,2 +1,312 @@
-Object.defineProperty(exports,"__esModule",{value:true});var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};var _jsxFileName='index.js';var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _react=require('react');var _react2=_interopRequireDefault(_react);var _reactNative=require('react-native');var _propTypes=require('prop-types');var _propTypes2=_interopRequireDefault(_propTypes);var _styles=require('./styles');var _styles2=_interopRequireDefault(_styles);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}var deviceScreen=_reactNative.Dimensions.get('window');var barrierForward=deviceScreen.width/4;function shouldOpenMenu(dx){return dx>barrierForward;}var SideMenu=function(_React$Component){_inherits(SideMenu,_React$Component);function SideMenu(props){_classCallCheck(this,SideMenu);var _this=_possibleConstructorReturn(this,(SideMenu.__proto__||Object.getPrototypeOf(SideMenu)).call(this,props));_this.prevLeft=0;_this.isOpen=!!props.isOpen;var initialMenuPositionMultiplier=props.menuPosition==='right'?-1:1;var openOffsetMenuPercentage=props.openMenuOffset/deviceScreen.width;var hiddenMenuOffsetPercentage=props.hiddenMenuOffset/deviceScreen.width;var left=new _reactNative.Animated.Value(props.isOpen?props.openMenuOffset*initialMenuPositionMultiplier:props.hiddenMenuOffset);_this.onLayoutChange=_this.onLayoutChange.bind(_this);_this.onStartShouldSetResponderCapture=props.onStartShouldSetResponderCapture.bind(_this);_this.onMoveShouldSetPanResponder=_this.handleMoveShouldSetPanResponder.bind(_this);_this.onPanResponderMove=_this.handlePanResponderMove.bind(_this);_this.onPanResponderRelease=_this.handlePanResponderEnd.bind(_this);_this.onPanResponderTerminate=_this.handlePanResponderEnd.bind(_this);_this.state={width:deviceScreen.width,height:deviceScreen.height,openOffsetMenuPercentage:openOffsetMenuPercentage,openMenuOffset:deviceScreen.width*openOffsetMenuPercentage,hiddenMenuOffsetPercentage:hiddenMenuOffsetPercentage,hiddenMenuOffset:deviceScreen.width*hiddenMenuOffsetPercentage,left:left};_this.state.left.addListener(function(_ref){var value=_ref.value;return _this.props.onSliding(Math.abs((value-_this.state.hiddenMenuOffset)/(_this.state.openMenuOffset-_this.state.hiddenMenuOffset)));});return _this;}_createClass(SideMenu,[{key:'componentWillMount',value:function componentWillMount(){this.responder=_reactNative.PanResponder.create({onStartShouldSetResponderCapture:this.onStartShouldSetResponderCapture,onMoveShouldSetPanResponder:this.onMoveShouldSetPanResponder,onPanResponderMove:this.onPanResponderMove,onPanResponderRelease:this.onPanResponderRelease,onPanResponderTerminate:this.onPanResponderTerminate});}},{key:'componentWillReceiveProps',value:function componentWillReceiveProps(props){if(typeof props.isOpen!=='undefined'&&this.isOpen!==props.isOpen&&(props.autoClosing||this.isOpen===false)){this.openMenu(props.isOpen);}}},{key:'onLayoutChange',value:function onLayoutChange(e){var _e$nativeEvent$layout=e.nativeEvent.layout,width=_e$nativeEvent$layout.width,height=_e$nativeEvent$layout.height;var openMenuOffset=width*this.state.openOffsetMenuPercentage;var hiddenMenuOffset=width*this.state.hiddenMenuOffsetPercentage;this.setState({width:width,height:height,openMenuOffset:openMenuOffset,hiddenMenuOffset:hiddenMenuOffset});}},{key:'getContentView',value:function getContentView(){var _this2=this;var overlay=null;if(this.isOpen){overlay=_react2.default.createElement(_reactNative.TouchableWithoutFeedback,{onPress:function onPress(){return _this2.openMenu(false);},__source:{fileName:_jsxFileName,lineNumber:138}},_react2.default.createElement(_reactNative.View,{style:_styles2.default.overlay,__source:{fileName:_jsxFileName,lineNumber:139}}));}var _state=this.state,width=_state.width,height=_state.height;var ref=function ref(sideMenu){return _this2.sideMenu=sideMenu;};var style=[_styles2.default.frontView,{width:width,height:height},this.props.animationStyle(this.state.left)];return _react2.default.createElement(_reactNative.Animated.View,_extends({style:style,ref:ref},this.responder.panHandlers,{__source:{fileName:_jsxFileName,lineNumber:153}}),this.props.children,overlay);}},{key:'moveLeft',value:function moveLeft(offset){var newOffset=this.menuPositionMultiplier()*offset;this.props.animationFunction(this.state.left,newOffset).start();this.prevLeft=newOffset;}},{key:'menuPositionMultiplier',value:function menuPositionMultiplier(){return this.props.menuPosition==='right'?-1:1;}},{key:'handlePanResponderMove',value:function handlePanResponderMove(e,gestureState){if(this.state.left.__getValue()*this.menuPositionMultiplier()>=0){var newLeft=this.prevLeft+gestureState.dx;if(!this.props.bounceBackOnOverdraw&&Math.abs(newLeft)>this.state.openMenuOffset){newLeft=this.menuPositionMultiplier()*this.state.openMenuOffset;}this.props.onMove(newLeft);this.state.left.setValue(newLeft);}}},{key:'handlePanResponderEnd',value:function handlePanResponderEnd(e,gestureState){var offsetLeft=this.menuPositionMultiplier()*(this.state.left.__getValue()+gestureState.dx);this.openMenu(shouldOpenMenu(offsetLeft));}},{key:'handleMoveShouldSetPanResponder',value:function handleMoveShouldSetPanResponder(e,gestureState){if(this.gesturesAreEnabled()){var x=Math.round(Math.abs(gestureState.dx));var y=Math.round(Math.abs(gestureState.dy));var touchMoved=x>this.props.toleranceX&&y<this.props.toleranceY;if(this.isOpen){return touchMoved;}var withinEdgeHitWidth=this.props.menuPosition==='right'?gestureState.moveX>deviceScreen.width-this.props.edgeHitWidth:gestureState.moveX<this.props.edgeHitWidth;var swipingToOpen=this.menuPositionMultiplier()*gestureState.dx>0;return withinEdgeHitWidth&&touchMoved&&swipingToOpen;}return false;}},{key:'openMenu',value:function openMenu(isOpen){var _state2=this.state,hiddenMenuOffset=_state2.hiddenMenuOffset,openMenuOffset=_state2.openMenuOffset;this.moveLeft(isOpen?openMenuOffset:hiddenMenuOffset);this.isOpen=isOpen;this.forceUpdate();this.props.onChange(isOpen);}},{key:'gesturesAreEnabled',value:function gesturesAreEnabled(){var disableGestures=this.props.disableGestures;if(typeof disableGestures==='function'){return!disableGestures();}return!disableGestures;}},{key:'render',value:function render(){var boundryStyle=this.props.menuPosition==='right'?{left:this.state.width-this.state.openMenuOffset}:{right:this.state.width-this.state.openMenuOffset};var menu=_react2.default.createElement(_reactNative.View,{style:[_styles2.default.menu,boundryStyle],__source:{fileName:_jsxFileName,lineNumber:241}},this.props.menu);return _react2.default.createElement(_reactNative.View,{style:_styles2.default.container,onLayout:this.onLayoutChange,__source:{fileName:_jsxFileName,lineNumber:247}},menu,this.getContentView());}}]);return SideMenu;}(_react2.default.Component);exports.default=SideMenu;SideMenu.propTypes={edgeHitWidth:_propTypes2.default.number,toleranceX:_propTypes2.default.number,toleranceY:_propTypes2.default.number,menuPosition:_propTypes2.default.oneOf(['left','right']),onChange:_propTypes2.default.func,onMove:_propTypes2.default.func,children:_propTypes2.default.node,menu:_propTypes2.default.node,openMenuOffset:_propTypes2.default.number,hiddenMenuOffset:_propTypes2.default.number,animationStyle:_propTypes2.default.func,disableGestures:_propTypes2.default.oneOfType([_propTypes2.default.func,_propTypes2.default.bool]),animationFunction:_propTypes2.default.func,onStartShouldSetResponderCapture:_propTypes2.default.func,isOpen:_propTypes2.default.bool,bounceBackOnOverdraw:_propTypes2.default.bool,autoClosing:_propTypes2.default.bool};SideMenu.defaultProps={toleranceY:10,toleranceX:10,edgeHitWidth:60,children:null,menu:null,openMenuOffset:deviceScreen.width*(2/3),disableGestures:false,menuPosition:'left',hiddenMenuOffset:0,onMove:function onMove(){},onStartShouldSetResponderCapture:function onStartShouldSetResponderCapture(){return true;},onChange:function onChange(){},onSliding:function onSliding(){},animationStyle:function animationStyle(value){return{transform:[{translateX:value}]};},animationFunction:function animationFunction(prop,value){return _reactNative.Animated.spring(prop,{toValue:value,friction:8});},isOpen:false,bounceBackOnOverdraw:true,autoClosing:true};
+// @flow
 
+import React from 'react';
+import {
+    PanResponder,
+    View,
+    Dimensions,
+    Animated,
+    TouchableWithoutFeedback,
+} from 'react-native';
+import PropTypes from 'prop-types';
+import styles from './styles';
+
+type WindowDimensions = { width: number, height: number };
+
+type Props = {
+    edgeHitWidth: number,
+    toleranceX: number,
+    toleranceY: number,
+    menuPosition: 'left' | 'right',
+    onChange: Function,
+    onMove: Function,
+    onSliding: Function,
+    openMenuOffset: number,
+    hiddenMenuOffset: number,
+    disableGestures: Function | bool,
+    animationFunction: Function,
+    onStartShouldSetResponderCapture: Function,
+    isOpen: bool,
+    bounceBackOnOverdraw: bool,
+    autoClosing: bool
+};
+
+type Event = {
+    nativeEvent: {
+        layout: {
+            width: number,
+            height: number,
+        },
+    },
+};
+
+type State = {
+    width: number,
+    height: number,
+    openOffsetMenuPercentage: number,
+    openMenuOffset: number,
+    hiddenMenuOffsetPercentage: number,
+    hiddenMenuOffset: number,
+    left: Animated.Value,
+};
+
+const deviceScreen: WindowDimensions = Dimensions.get('window');
+const barrierForward: number = deviceScreen.width / 4;
+
+function shouldOpenMenu(dx: number): boolean {
+    return dx > barrierForward;
+}
+
+export default class SideMenu extends React.Component {
+    onLayoutChange: Function;
+    onStartShouldSetResponderCapture: Function;
+    onMoveShouldSetPanResponder: Function;
+    onPanResponderMove: Function;
+    onPanResponderRelease: Function;
+    onPanResponderTerminate: Function;
+    state: State;
+    prevLeft: number;
+    isOpen: boolean;
+
+    constructor(props: Props) {
+        super(props);
+
+        this.prevLeft = 0;
+        this.isOpen = !!props.isOpen;
+
+        const initialMenuPositionMultiplier = props.menuPosition === 'right' ? -1 : 1;
+        const openOffsetMenuPercentage = props.openMenuOffset / deviceScreen.width;
+        const hiddenMenuOffsetPercentage = props.hiddenMenuOffset / deviceScreen.width;
+        const left: Animated.Value = new Animated.Value(
+            props.isOpen
+                ? props.openMenuOffset * initialMenuPositionMultiplier
+                : props.hiddenMenuOffset,
+        );
+
+        const scale: Animated.Value = new Animated.Value(1);
+        const round: Animated.Value = new Animated.Value(0);
+
+        this.onLayoutChange = this.onLayoutChange.bind(this);
+        this.onStartShouldSetResponderCapture = props.onStartShouldSetResponderCapture.bind(this);
+        this.onMoveShouldSetPanResponder = this.handleMoveShouldSetPanResponder.bind(this);
+        this.onPanResponderMove = this.handlePanResponderMove.bind(this);
+        this.onPanResponderRelease = this.handlePanResponderEnd.bind(this);
+        this.onPanResponderTerminate = this.handlePanResponderEnd.bind(this);
+
+        this.state = {
+            width: deviceScreen.width,
+            height: deviceScreen.height,
+            openOffsetMenuPercentage,
+            openMenuOffset: deviceScreen.width * openOffsetMenuPercentage,
+            hiddenMenuOffsetPercentage,
+            hiddenMenuOffset: deviceScreen.width * hiddenMenuOffsetPercentage,
+            left,
+            scale,
+            round,
+        };
+
+        this.state.left.addListener(({ value }) => this.props.onSliding(Math.abs((value - this.state.hiddenMenuOffset) / (this.state.openMenuOffset - this.state.hiddenMenuOffset))));
+    }
+
+    componentWillMount(): void {
+        this.responder = PanResponder.create({
+            onStartShouldSetResponderCapture: this.onStartShouldSetResponderCapture,
+            onMoveShouldSetPanResponder: this.onMoveShouldSetPanResponder,
+            onPanResponderMove: this.onPanResponderMove,
+            onPanResponderRelease: this.onPanResponderRelease,
+            onPanResponderTerminate: this.onPanResponderTerminate,
+        });
+    }
+
+    componentWillReceiveProps(props: Props): void {
+        if (typeof props.isOpen !== 'undefined' && this.isOpen !== props.isOpen && (props.autoClosing || this.isOpen === false)) {
+            this.openMenu(props.isOpen);
+        }
+    }
+
+    onLayoutChange(e: Event) {
+        const { width, height } = e.nativeEvent.layout;
+        const openMenuOffset = width * this.state.openOffsetMenuPercentage;
+        const hiddenMenuOffset = width * this.state.hiddenMenuOffsetPercentage;
+        this.setState({ width, height, openMenuOffset, hiddenMenuOffset });
+    }
+
+    /**
+     * Get content view. This view will be rendered over menu
+     * @return {React.Component}
+     */
+    getContentView() {
+        let overlay: React.Element<void, void> = null;
+
+        if (this.isOpen) {
+            overlay = (
+                <TouchableWithoutFeedback onPress={() => this.openMenu(false)}>
+                    <View style={styles.overlay} />
+                </TouchableWithoutFeedback>
+            );
+        }
+
+        const { width, height } = this.state;
+        const ref = sideMenu => (this.sideMenu = sideMenu);
+        const style = [
+            styles.frontView,
+            { width, height },
+            this.props.animationStyle(this.state.left, this.state.scale, this.state.round),
+        ];
+
+        return (
+            <Animated.View style={style} ref={ref} {...this.responder.panHandlers}>
+                {this.props.children}
+                {overlay}
+            </Animated.View>
+        );
+    }
+
+    moveLeft(offset: number) {
+        const newOffset = this.menuPositionMultiplier() * offset;
+
+        Animated.parallel([
+            this.props.animationFunction(this.state.left, newOffset),
+            this.props.animationFunction(this.state.scale, this.isOpen ? 1 : 0.9),
+            this.props.animationFunction(this.state.round, this.isOpen ? 0 : 30)
+        ]).start()
+
+        this.prevLeft = newOffset;
+    }
+
+    menuPositionMultiplier(): -1 | 1 {
+        return this.props.menuPosition === 'right' ? -1 : 1;
+    }
+
+    handlePanResponderMove(e: Object, gestureState: Object) {
+        if (this.state.left.__getValue() * this.menuPositionMultiplier() >= 0) {
+            let newLeft = this.prevLeft + gestureState.dx;
+
+            if (!this.props.bounceBackOnOverdraw && Math.abs(newLeft) > this.state.openMenuOffset) {
+                newLeft = this.menuPositionMultiplier() * this.state.openMenuOffset;
+            }
+
+            this.props.onMove(newLeft);
+            const procent = newLeft / this.state.openMenuOffset
+            this.state.round.setValue(procent * 30);
+            this.state.left.setValue(newLeft);
+        }
+    }
+
+    handlePanResponderEnd(e: Object, gestureState: Object) {
+        const offsetLeft = this.menuPositionMultiplier() *
+            (this.state.left.__getValue() + gestureState.dx);
+
+        this.openMenu(shouldOpenMenu(offsetLeft));
+    }
+
+    handleMoveShouldSetPanResponder(e: any, gestureState: any): boolean {
+        if (this.gesturesAreEnabled()) {
+            const x = Math.round(Math.abs(gestureState.dx));
+            const y = Math.round(Math.abs(gestureState.dy));
+
+            const touchMoved = x > this.props.toleranceX && y < this.props.toleranceY;
+
+            if (this.isOpen) {
+                return touchMoved;
+            }
+
+            const withinEdgeHitWidth = this.props.menuPosition === 'right' ?
+                gestureState.moveX > (deviceScreen.width - this.props.edgeHitWidth) :
+                gestureState.moveX < this.props.edgeHitWidth;
+
+            const swipingToOpen = this.menuPositionMultiplier() * gestureState.dx > 0;
+            return withinEdgeHitWidth && touchMoved && swipingToOpen;
+        }
+
+        return false;
+    }
+
+    openMenu(isOpen: boolean): void {
+        const { hiddenMenuOffset, openMenuOffset } = this.state;
+        this.moveLeft(isOpen ? openMenuOffset : hiddenMenuOffset);
+        this.isOpen = isOpen;
+
+        this.forceUpdate();
+        this.props.onChange(isOpen);
+    }
+
+    gesturesAreEnabled(): boolean {
+        const { disableGestures } = this.props;
+
+        if (typeof disableGestures === 'function') {
+            return !disableGestures();
+        }
+
+        return !disableGestures;
+    }
+
+    render(): React.Element<void, void> {
+        const boundryStyle = this.props.menuPosition === 'right' ?
+            { left: this.state.width - this.state.openMenuOffset } :
+            { right: this.state.width - this.state.openMenuOffset };
+
+        const menu = (
+            <View style={[styles.menu, boundryStyle]}>
+                {this.props.menu}
+            </View>
+        );
+
+        return (
+            <View
+                style={styles.container}
+                onLayout={this.onLayoutChange}
+            >
+                {menu}
+                {this.getContentView()}
+            </View>
+        );
+    }
+}
+
+SideMenu.propTypes = {
+    edgeHitWidth: PropTypes.number,
+    toleranceX: PropTypes.number,
+    toleranceY: PropTypes.number,
+    menuPosition: PropTypes.oneOf(['left', 'right']),
+    onChange: PropTypes.func,
+    onMove: PropTypes.func,
+    children: PropTypes.node,
+    menu: PropTypes.node,
+    openMenuOffset: PropTypes.number,
+    hiddenMenuOffset: PropTypes.number,
+    animationStyle: PropTypes.func,
+    disableGestures: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
+    animationFunction: PropTypes.func,
+    onStartShouldSetResponderCapture: PropTypes.func,
+    isOpen: PropTypes.bool,
+    bounceBackOnOverdraw: PropTypes.bool,
+    autoClosing: PropTypes.bool,
+};
+
+SideMenu.defaultProps = {
+    toleranceY: 10,
+    toleranceX: 10,
+    edgeHitWidth: 60,
+    children: null,
+    menu: null,
+    openMenuOffset: deviceScreen.width * (2 / 3),
+    disableGestures: false,
+    menuPosition: 'left',
+    hiddenMenuOffset: 0,
+    onMove: () => { },
+    onStartShouldSetResponderCapture: () => true,
+    onChange: () => { },
+    onSliding: () => { },
+    animationStyle: (value, scale, round) => ({
+        transform: [{ translateX: value }, { scale: scale }],
+        borderRadius: round,
+    }),
+    animationFunction: (prop, value) => Animated.spring(prop, {
+        toValue: value,
+        friction: 8,
+    }),
+    isOpen: false,
+    bounceBackOnOverdraw: true,
+    autoClosing: true,
+};
