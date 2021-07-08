@@ -152,14 +152,17 @@ export default class SideMenu extends React.Component {
         const style = [
             styles.frontView,
             { width, height },
+
             this.props.animationStyle(this.state.left, this.state.scale, this.state.round),
         ];
 
         return (
-            <Animated.View style={style} ref={ref} {...this.responder.panHandlers}>
-                {this.props.children}
-                {overlay}
-            </Animated.View>
+            <View style={{ flex: 1, shadowColor: '#000', shadowRadius: 30, shadowOpacity: 0.35, shadowOffset: {width: 0, height: 4} }} shouldRasterizeIOS >
+                <Animated.View style={style} ref={ref} {...this.responder.panHandlers} shouldRasterizeIOS>
+                    {this.props.children}
+                    {overlay}
+                </Animated.View>
+            </View>
         );
     }
 
@@ -190,6 +193,8 @@ export default class SideMenu extends React.Component {
             this.props.onMove(newLeft);
             const procent = newLeft / this.state.openMenuOffset
             this.state.round.setValue(procent * 30);
+            // this.state.round.setOffset(procent * 30)
+            // this.state.scale.setValue(1-(procent * 0.1))
             this.state.left.setValue(newLeft);
         }
     }
@@ -302,6 +307,7 @@ SideMenu.defaultProps = {
     animationStyle: (value, scale, round) => ({
         transform: [{ translateX: value }, { scale: scale }],
         borderRadius: round,
+
     }),
     animationFunction: (prop, value) => Animated.spring(prop, {
         toValue: value,
