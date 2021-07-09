@@ -157,12 +157,12 @@ export default class SideMenu extends React.Component {
         ];
 
         return (
-            <View style={{ flex: 1, shadowColor: '#000', shadowRadius: 30, shadowOpacity: 0.35, shadowOffset: {width: 0, height: 4} }} shouldRasterizeIOS >
-                <Animated.View style={style} ref={ref} {...this.responder.panHandlers} shouldRasterizeIOS>
+                <Animated.View style={[style, {overflow:'visible', shadowColor: '#000', shadowRadius: 30, shadowOpacity: 0.35, shadowOffset: {width: 0, height: 4} }]} ref={ref} {...this.responder.panHandlers} shouldRasterizeIOS>
+                    <Animated.View style={{flex: 1, borderRadius: this.state.round, overflow: 'hidden'}}>
                     {this.props.children}
                     {overlay}
+                    </Animated.View>
                 </Animated.View>
-            </View>
         );
     }
 
@@ -296,7 +296,7 @@ SideMenu.defaultProps = {
     edgeHitWidth: 60,
     children: null,
     menu: null,
-    openMenuOffset: deviceScreen.width * (2 / 3),
+    openMenuOffset: deviceScreen.width * (3 / 4),
     disableGestures: false,
     menuPosition: 'left',
     hiddenMenuOffset: 0,
